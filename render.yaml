@@ -1,9 +1,9 @@
 # render.yaml — Tathya.AI Render Blueprint
-# Gemini-only ML pipeline (no HuggingFace required)
+# Grok-only ML pipeline (no HuggingFace required)
 
 services:
 
-  # ── 1. Python FastAPI — ML Service (Gemini-only) ─────────
+  # ── 1. Python FastAPI — ML Service (Grok-only) ─────────
   - type: web
     name: tathya-ml-api
     runtime: python
@@ -12,8 +12,8 @@ services:
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     plan: free
     envVars:
-      - key: GEMINI_API_KEY
-        sync: false          # Set manually in Render dashboard
+      - key: GROQ_API_KEY
+        sync: false          # Get free key from https://console.groq.com
 
   # ── 2. Node.js Backend + Frontend ────────────────────────
   - type: web
