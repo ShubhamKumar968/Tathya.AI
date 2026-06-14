@@ -1,16 +1,14 @@
 """
 analyzer.py — Tathya.AI
-Uses the NEW google-genai SDK (v1 API) — works with all key types including AQ.* format.
-Single Gemini call for both classification + explanation.
+Uses Groq API (free tier) with Llama 3.1 for fake news classification + explanation.
+No credit card required. Free: 14,400 requests/day, 30 req/min.
 """
 
-from google import genai
+from groq import Groq
 import os
 import json
-import re
 from dotenv import load_dotenv
 
-# Load from root-level .env locally; on Render env vars are set in dashboard
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 _client = None
@@ -19,92 +17,75 @@ _client = None
 def _get_client():
     global _client
     if _client is None:
-        api_key = os.getenv("GEMINI_API_KEY")
+        api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
             raise ValueError(
-                "GEMINI_API_KEY is not set. Add it to your .env or Render environment variables."
+                "GROQ_API_KEY is not set. Get a free key from https://console.groq.com "
+                "and add it to your Render environment variables."
             )
-        _client = genai.Client(
-            api_key=api_key,
-            http_options={"api_version": "v1"}   # Force v1 — gemini-1.5-flash not in v1beta
-        )
+        _client = Groq(api_key=api_key)
     return _client
 
 
 def analyze_article(text: str) -> dict:
     """
-    Single Gemini 2.0 Flash call that returns:
-    - label:       "FAKE" or "REAL"
-    - confidence:  float between 0.55 and 0.99
-    - explanation: bullet-point string explaining the classification
+    Uses Groq (Llama 3.1) to classify + explain in one call.
+    Returns: {"label": "FAKE"|"REAL", "confidence": float, "explanation": str}
     """
     client = _get_client()
 
-    prompt = f"""You are an expert fact-checker and misinformation analyst.
+    system_prompt = """You are an expert fact-checker and misinformation analyst. 
+You always respond with valid JSON only — no markdown, no extra text."""
 
-Analyze the following news article or text for authenticity. Evaluate based on:
-- Language style (sensational, emotional, clickbait vs neutral, factual)
-- Source attribution (named sources, official data, studies vs anonymous or none)
-- Verifiable claims vs vague or unverifiable assertions
+    user_prompt = f"""Analyze this news article for authenticity. Evaluate:
+- Language style (sensational/emotional vs neutral/factual)
+- Source attribution (named sources, studies, data vs anonymous/none)
+- Verifiable claims vs vague/unverifiable assertions  
 - Known misinformation patterns (conspiracy framing, health scams, political manipulation)
 
-Article text:
-\"\"\"
-{text[:2000]}
-\"\"\"
+Article:
+\"\"\"{text[:2000]}\"\"\"
 
-Respond with ONLY a valid JSON object — no markdown, no code fences, no extra text:
+Respond with ONLY this JSON structure:
 {{
   "label": "FAKE",
   "confidence": 0.91,
   "bullets": [
-    "Key observation 1 about why this is fake/real",
-    "Key observation 2 about language or source credibility",
-    "Key observation 3 about specific claims or framing",
-    "Brief recommendation for the reader"
+    "Observation 1 explaining classification",
+    "Observation 2 about language/sources",
+    "Observation 3 about specific claims",
+    "Recommendation for the reader"
   ]
 }}
 
-Strict rules:
-- label must be exactly "FAKE" or "REAL" (uppercase)
-- confidence must be between 0.55 and 0.99
-- bullets must have 3–5 items, each a complete sentence
-- Output ONLY the JSON object, nothing else"""
+Rules: label = "FAKE" or "REAL" exactly. confidence = 0.55 to 0.99. 3-5 bullets."""
 
-    response = client.models.generate_content(
-        model="gemini-1.5-flash",
-        contents=prompt,
+    response = client.chat.completions.create(
+        model="llama-3.1-8b-instant",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user",   "content": user_prompt},
+        ],
+        response_format={"type": "json_object"},  # Guaranteed valid JSON
+        temperature=0.3,
+        max_tokens=800,
     )
 
-    raw = response.text.strip()
-
-    # Strip markdown code fences if Gemini wraps the response
-    raw = re.sub(r"^```(?:json)?\s*", "", raw)
-    raw = re.sub(r"\s*```$", "", raw)
-    raw = raw.strip()
-
-    # Extract the JSON object
-    json_match = re.search(r"\{.*\}", raw, re.DOTALL)
-    if not json_match:
-        raise RuntimeError(
-            f"Gemini did not return valid JSON. Raw response: {raw[:300]}"
-        )
-
-    result = json.loads(json_match.group())
+    result = json.loads(response.choices[0].message.content)
 
     # Validate label
     label = str(result.get("label", "")).strip().upper()
     if label not in ("FAKE", "REAL"):
-        raise RuntimeError(f"Gemini returned an unexpected label: '{label}'")
+        raise RuntimeError(f"Model returned unexpected label: '{label}'")
 
-    # Clamp confidence to a safe range
+    # Clamp confidence
     confidence = float(result.get("confidence", 0.75))
     confidence = round(max(0.55, min(0.99, confidence)), 4)
 
-    # Build bullet-point explanation string
+    # Build explanation
     bullets = result.get("bullets", [])
     if not bullets:
-        raise RuntimeError("Gemini returned no explanation bullets.")
+        raise RuntimeError("Model returned no explanation bullets.")
     explanation = "\n".join(f"• {b.strip()}" for b in bullets if b.strip())
 
     return {

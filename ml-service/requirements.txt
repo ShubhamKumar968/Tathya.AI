@@ -1,8 +1,8 @@
 # Tathya.AI ML Service — Requirements
-# Uses new google-genai SDK (v1 API) instead of old google-generativeai (v1beta)
+# Uses Groq API (free, fast, no credit card needed)
 
 fastapi
 uvicorn[standard]
-google-genai
+groq
 python-dotenv
 pydantic
