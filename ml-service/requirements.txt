@@ -1,8 +1,8 @@
 # Tathya.AI ML Service — Requirements
-# Gemini-only pipeline (no HuggingFace, no PyTorch, no heavy libraries)
+# Uses new google-genai SDK (v1 API) instead of old google-generativeai (v1beta)
 
 fastapi
 uvicorn[standard]
-google-generativeai
+google-genai
 python-dotenv
 pydantic

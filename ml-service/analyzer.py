@@ -1,41 +1,41 @@
 """
 analyzer.py — Tathya.AI
-Single Gemini call for classification + explanation (no HuggingFace needed).
+Uses the NEW google-genai SDK (v1 API) — works with all key types including AQ.* format.
+Single Gemini call for both classification + explanation.
 """
 
-import google.generativeai as genai
+from google import genai
 import os
 import json
 import re
 from dotenv import load_dotenv
 
-# Load from root-level .env (works locally; on Render, env vars are set directly)
+# Load from root-level .env locally; on Render env vars are set in dashboard
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
 
-_model = None
+_client = None
 
 
-def _get_model():
-    global _model
-    if _model is None:
+def _get_client():
+    global _client
+    if _client is None:
         api_key = os.getenv("GEMINI_API_KEY")
         if not api_key:
             raise ValueError(
-                "GEMINI_API_KEY is not set. Add it to your .env file or Render environment variables."
+                "GEMINI_API_KEY is not set. Add it to your .env or Render environment variables."
             )
-        genai.configure(api_key=api_key)
-        _model = genai.GenerativeModel("gemini-1.5-flash")
-    return _model
+        _client = genai.Client(api_key=api_key)
+    return _client
 
 
 def analyze_article(text: str) -> dict:
     """
-    Single Gemini API call that returns:
+    Single Gemini 2.0 Flash call that returns:
     - label:       "FAKE" or "REAL"
     - confidence:  float between 0.55 and 0.99
     - explanation: bullet-point string explaining the classification
     """
-    model = _get_model()
+    client = _get_client()
 
     prompt = f"""You are an expert fact-checker and misinformation analyst.
 
@@ -64,11 +64,15 @@ Respond with ONLY a valid JSON object — no markdown, no code fences, no extra 
 
 Strict rules:
 - label must be exactly "FAKE" or "REAL" (uppercase)
-- confidence must be between 0.55 and 0.99 (be honest about uncertainty)
+- confidence must be between 0.55 and 0.99
 - bullets must have 3–5 items, each a complete sentence
 - Output ONLY the JSON object, nothing else"""
 
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=prompt,
+    )
+
     raw = response.text.strip()
 
     # Strip markdown code fences if Gemini wraps the response

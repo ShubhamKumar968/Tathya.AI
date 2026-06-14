@@ -68,5 +68,6 @@ def health():
         "status": "ok",
         "gemini_configured": bool(gemini_key),
         "gemini_key_prefix": gemini_key[:8] + "..." if gemini_key else "NOT SET",
-        "engine": "gemini-1.5-flash",
+        "engine": "gemini-2.0-flash",
+        "sdk": "google-genai (v1 API)",
     }
