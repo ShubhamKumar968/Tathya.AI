@@ -5,7 +5,7 @@
 
 // Dynamically uses the same host+port the page was served from
 // so it works on port 5000, 3000, or any other port without changes.
-const API_BASE = window.location.origin;
+const API_BASE = "https://tathya-backend-23rh.onrender.com";
 
 /**
  * Log in an existing user.

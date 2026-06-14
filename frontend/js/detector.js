@@ -4,7 +4,7 @@
  */
 
 // Dynamically uses the same host+port the page was served from
-const BACKEND_BASE = window.location.origin;
+const BACKEND_BASE = "https://tathya-backend-23rh.onrender.com";
 
 // ──────────────────────────────────────────
 // Analyze
