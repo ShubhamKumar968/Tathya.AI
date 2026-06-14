@@ -69,7 +69,7 @@ Strict rules:
 - Output ONLY the JSON object, nothing else"""
 
     response = client.models.generate_content(
-        model="gemini-1.5-flash",
+        model="gemini-2.0-flash-lite",
         contents=prompt,
     )
 
