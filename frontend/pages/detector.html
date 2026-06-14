@@ -23,6 +23,15 @@
         <button class="btn-logout" onclick="logout()">Logout</button>
       </div>
     </nav>
+    
+    <!-- API Status Bar -->
+    <div class="api-status-bar">
+      <span class="api-dot" id="apiDot"></span>
+      <span id="apiStatusText">Checking ML API...</span>
+      <button class="btn-wake" id="wakeBtn" onclick="wakeUpML()" style="display:none">
+        ⚡ Wake Up API
+      </button>
+    </div>
 
     <main class="detector-main">
       <div class="section-title">Fake News Detector</div>

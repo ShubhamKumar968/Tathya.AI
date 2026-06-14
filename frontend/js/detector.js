@@ -1,10 +1,73 @@
 /**
  * detector.js — Core logic for the fake news detector page
- * Handles: analyze button, result rendering, history loading
+ * Handles: analyze button, result rendering, history loading, ML API status
  */
 
-// Dynamically uses the same host+port the page was served from
 const BACKEND_BASE = "https://tathya-backend-23rh.onrender.com";
+const ML_BASE = "https://tathya-ai.onrender.com";
+
+// ──────────────────────────────────────────
+// ML API Status Checker
+// ──────────────────────────────────────────
+
+async function checkMLStatus() {
+  const dot = document.getElementById("apiDot");
+  const text = document.getElementById("apiStatusText");
+  const wakeBtn = document.getElementById("wakeBtn");
+
+  dot.className = "api-dot checking";
+  text.textContent = "Checking ML API...";
+  wakeBtn.style.display = "none";
+
+  try {
+    const res = await fetch(`${ML_BASE}/health`, {
+      signal: AbortSignal.timeout(5000),
+    });
+    if (res.ok) {
+      dot.className = "api-dot online";
+      text.textContent = "ML API Online";
+      wakeBtn.style.display = "none";
+    } else {
+      throw new Error("not ok");
+    }
+  } catch {
+    dot.className = "api-dot offline";
+    text.textContent = "ML API Offline";
+    wakeBtn.style.display = "inline-block";
+  }
+}
+
+async function wakeUpML() {
+  const dot = document.getElementById("apiDot");
+  const text = document.getElementById("apiStatusText");
+  const wakeBtn = document.getElementById("wakeBtn");
+
+  dot.className = "api-dot checking";
+  text.textContent = "Waking up ML API... (30-60 sec)";
+  wakeBtn.disabled = true;
+  wakeBtn.textContent = "Waking up...";
+
+  try {
+    const res = await fetch(`${ML_BASE}/health`, {
+      signal: AbortSignal.timeout(60000),
+    });
+    if (res.ok) {
+      dot.className = "api-dot online";
+      text.textContent = "ML API Online ✅";
+      wakeBtn.style.display = "none";
+    } else {
+      throw new Error("not ok");
+    }
+  } catch {
+    dot.className = "api-dot offline";
+    text.textContent = "ML API still offline — try again";
+    wakeBtn.disabled = false;
+    wakeBtn.textContent = "⚡ Wake Up API";
+  }
+}
+
+// Check on page load
+checkMLStatus();
 
 // ──────────────────────────────────────────
 // Analyze
@@ -51,12 +114,10 @@ async function handleAnalyze() {
     }
 
     displayResult(data);
-    loadHistory(); // Refresh history after new analysis
+    loadHistory();
+    checkMLStatus(); // Refresh status after analyze
   } catch (err) {
-    showToast(
-      "Network error. Make sure the backend (port 5000) and ML service (port 8000) are running.",
-      "error"
-    );
+    showToast("Network error. Please try again.", "error");
   } finally {
     btn.disabled = false;
     spinner.style.display = "none";
@@ -82,7 +143,7 @@ function displayResult(data) {
   badge.className = `badge ${isFake ? "badge-fake" : "badge-real"}`;
   badge.textContent = isFake ? "⚠️ Likely Fake" : "✅ Likely Real";
 
-  // Confidence bar (animate after short delay so CSS transition fires)
+  // Confidence bar
   const pct = Math.round(confidence * 100);
   confBar.className = `conf-bar ${isFake ? "fake" : "real"}`;
   confBar.style.width = "0%";
@@ -91,15 +152,14 @@ function displayResult(data) {
   }, 80);
   confValue.textContent = `${pct}% confidence`;
 
-  // Parse Gemini bullet points — handles •, -, *, and numbered lists
+  // Parse Gemini bullet points
   bulletList.innerHTML = "";
   const lines = explanation
     .split("\n")
     .map((l) => l.replace(/^[\s•\-\*\d\.]+/, "").trim())
-    .filter((l) => l.length > 2); // drop empty / very short fragments
+    .filter((l) => l.length > 2);
 
   if (lines.length === 0) {
-    // Fallback: show raw explanation in a single item
     const li = document.createElement("li");
     li.innerHTML = `<span class="bullet-dot"></span><span>${explanation}</span>`;
     bulletList.appendChild(li);
@@ -111,7 +171,7 @@ function displayResult(data) {
     });
   }
 
-  // Show card with smooth scroll
+  // Show card
   resultCard.classList.add("show");
   setTimeout(() => {
     resultCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -172,16 +232,15 @@ async function loadHistory() {
       historyList.appendChild(div);
     });
   } catch (err) {
-    // History is non-critical — silently fail so it doesn't block main UI
+    // History is non-critical — silently fail
   }
 }
 
 // ──────────────────────────────────────────
-// Toast notification (replaces alert())
+// Toast notification
 // ──────────────────────────────────────────
 
 function showToast(message, type = "info") {
-  // Remove existing toast if any
   const existing = document.getElementById("toastMsg");
   if (existing) existing.remove();
 
@@ -191,10 +250,8 @@ function showToast(message, type = "info") {
   toast.textContent = message;
   document.body.appendChild(toast);
 
-  // Trigger show animation
   requestAnimationFrame(() => toast.classList.add("toast-show"));
 
-  // Auto-hide after 4s
   setTimeout(() => {
     toast.classList.remove("toast-show");
     setTimeout(() => toast.remove(), 300);
