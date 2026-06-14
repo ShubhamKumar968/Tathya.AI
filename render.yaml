@@ -1,10 +1,9 @@
 # render.yaml — Tathya.AI Render Blueprint
-# Deploy both services in one click from your GitHub repo.
-# Docs: https://render.com/docs/blueprint-spec
+# Gemini-only ML pipeline (no HuggingFace required)
 
 services:
 
-  # ── 1. Python FastAPI — ML Model ─────────────────────────
+  # ── 1. Python FastAPI — ML Service (Gemini-only) ─────────
   - type: web
     name: tathya-ml-api
     runtime: python
@@ -15,10 +14,6 @@ services:
     envVars:
       - key: GEMINI_API_KEY
         sync: false          # Set manually in Render dashboard
-      - key: HF_API_TOKEN
-        sync: false          # Set manually in Render dashboard
-      - key: HF_MODEL
-        value: hamzab/roberta-fake-news-classification
 
   # ── 2. Node.js Backend + Frontend ────────────────────────
   - type: web
@@ -34,6 +29,6 @@ services:
       - key: JWT_SECRET
         sync: false          # Any long random string
       - key: ML_API_URL
-        sync: false          # URL of tathya-ml-api service above (set after ML deploys)
+        sync: false          # URL of tathya-ml-api (e.g. https://tathya-ml-api.onrender.com)
       - key: NODE_ENV
         value: production
