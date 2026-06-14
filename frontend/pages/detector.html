@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Detector — Tathya.AI</title>
+  <meta name="description" content="Analyze news articles for fake content using Tathya.AI's AI-powered detector." />
+  <link rel="stylesheet" href="../css/style.css" />
+  <script src="../js/theme.js"></script>
+</head>
+<body class="detector-body">
+  <div class="detector-layout">
+
+    <nav class="navbar">
+      <a class="nav-logo" href="index.html">
+        <div class="nav-logo-icon">🛡️</div>
+        Tathya<span class="logo-dot">.AI</span>
+      </a>
+      <div class="nav-right">
+        <span class="nav-user" id="navUser">Loading…</span>
+        <div class="avatar" id="navAvatar">--</div>
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme"></button>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+      </div>
+    </nav>
+
+    <main class="detector-main">
+      <div class="section-title">Fake News Detector</div>
+      <div class="section-sub">Paste any news article or text to check its credibility using AI</div>
+
+      <div class="input-card">
+        <label class="input-label" for="newsText">Article or news text</label>
+        <textarea
+          id="newsText"
+          placeholder="Paste any news article, headline, or paragraph here (min. 50 characters)…"
+          oninput="updateCharCount()"
+        ></textarea>
+        <div class="char-count"><span id="charCount">0</span> / 5000 characters</div>
+      </div>
+
+      <button class="btn-analyze" id="analyzeBtn" onclick="handleAnalyze()">
+        <div class="spinner" id="spinner"></div>
+        <span id="btnText">🔍 Analyze</span>
+      </button>
+
+      <div class="result-card" id="resultCard">
+        <div class="result-header">
+          <div class="result-title">Analysis Result</div>
+          <div class="badge" id="resultBadge"></div>
+        </div>
+
+        <div class="conf-label">CONFIDENCE SCORE</div>
+        <div class="conf-bar-bg">
+          <div class="conf-bar" id="confBar" style="width:0%"></div>
+        </div>
+        <div class="conf-value" id="confValue"></div>
+
+        <div class="explanation-title">AI EXPLANATION</div>
+        <ul class="bullet-list" id="bulletList"></ul>
+      </div>
+
+      <div class="history-section" id="historySection" style="display:none">
+        <div class="history-title">Recent Analyses</div>
+        <div id="historyList"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/detector.js"></script>
+  <script>
+    // ── Auth guard ──
+    const token = localStorage.getItem("token");
+    if (!token) window.location.href = "login.html";
+
+    // ── Load user info into navbar ──
+    const userName = localStorage.getItem("userName") || "User";
+    document.getElementById("navUser").textContent = userName;
+    document.getElementById("navAvatar").textContent = userName.slice(0, 2).toUpperCase();
+
+    function updateCharCount() {
+      const val = document.getElementById("newsText").value;
+      const len = val.length;
+      const el  = document.getElementById("charCount");
+      el.textContent = len;
+      el.style.color = len < 50 ? "var(--fake-text)" : len > 4800 ? "var(--fake-text)" : "var(--text-muted)";
+    }
+
+    function logout() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userName");
+      window.location.href = "index.html";
+    }
+
+    // Load history on page load
+    loadHistory();
+  </script>
+</body>
+</html>

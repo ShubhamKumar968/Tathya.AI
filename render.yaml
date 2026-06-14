@@ -1,0 +1,39 @@
+# render.yaml — Tathya.AI Render Blueprint
+# Deploy both services in one click from your GitHub repo.
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+
+  # ── 1. Python FastAPI — ML Model ─────────────────────────
+  - type: web
+    name: tathya-ml-api
+    runtime: python
+    rootDir: ml-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false          # Set manually in Render dashboard
+      - key: HF_API_TOKEN
+        sync: false          # Set manually in Render dashboard
+      - key: HF_MODEL
+        value: hamzab/roberta-fake-news-classification
+
+  # ── 2. Node.js Backend + Frontend ────────────────────────
+  - type: web
+    name: tathya-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    plan: free
+    envVars:
+      - key: MONGO_URI
+        sync: false          # Your MongoDB Atlas URI
+      - key: JWT_SECRET
+        sync: false          # Any long random string
+      - key: ML_API_URL
+        sync: false          # URL of tathya-ml-api service above (set after ML deploys)
+      - key: NODE_ENV
+        value: production

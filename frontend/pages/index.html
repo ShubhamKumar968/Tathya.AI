@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tathya.AI — AI-Powered Fake News Detector</title>
+  <meta name="description" content="Tathya.AI uses advanced AI to detect fake news. Paste any article and get an instant credibility analysis powered by RoBERTa and Google Gemini." />
+  <link rel="stylesheet" href="../css/style.css" />
+  <script src="../js/theme.js"></script>
+</head>
+<body class="landing-body">
+
+  <!-- ── Navbar ───────────────────────────────────────── -->
+  <nav class="land-nav" id="landNav">
+    <a class="land-nav-logo" href="index.html">
+      <div class="land-logo-icon">🛡️</div>
+      <span>Tathya<span class="logo-dot">.AI</span></span>
+    </a>
+
+    <div class="land-nav-links">
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How It Works</a>
+    </div>
+
+    <div class="land-nav-right">
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" id="themeToggleNav">🌙</button>
+      <!-- Shown when NOT logged in -->
+      <div id="navGuest" style="display:flex;gap:10px;align-items:center;">
+        <a href="login.html" class="land-btn-ghost">Login</a>
+        <a href="signup.html" class="land-btn-primary">Get Started</a>
+      </div>
+      <!-- Shown when logged in -->
+      <div id="navUser" style="display:none;gap:10px;align-items:center;">
+        <span class="nav-welcome" id="navWelcomeName"></span>
+        <a href="detector.html" class="land-btn-primary">Go to App →</a>
+        <button class="land-btn-ghost" onclick="logoutLanding()">Logout</button>
+      </div>
+    </div>
+
+    <!-- Mobile hamburger -->
+    <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#features" onclick="closeMobileMenu()">Features</a>
+    <a href="#how-it-works" onclick="closeMobileMenu()">How It Works</a>
+    <a href="login.html" class="land-btn-ghost" style="width:100%;text-align:center;">Login</a>
+    <a href="signup.html" class="land-btn-primary" style="width:100%;text-align:center;">Get Started</a>
+  </div>
+
+  <!-- ── Hero ─────────────────────────────────────────── -->
+  <section class="hero-section">
+    <div class="hero-badge">🧠 Powered by RoBERTa + Google Gemini</div>
+
+    <h1 class="hero-title">
+      Stop Fake News<br/>
+      <span class="hero-gradient-text">Before It Spreads.</span>
+    </h1>
+
+    <p class="hero-sub">
+      Tathya.AI analyzes any news article or paragraph in seconds using
+      state-of-the-art AI — and <strong>explains exactly why</strong> it may be fake or real.
+    </p>
+
+    <div class="hero-actions">
+      <button class="land-btn-primary land-btn-lg" onclick="handleTryNow()" id="heroCtaBtn">
+        🔍 Try It Now — It's Free
+      </button>
+      <a href="#how-it-works" class="land-btn-ghost land-btn-lg">See How It Works ↓</a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-value">95%+</div>
+        <div class="stat-label">Accuracy</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-value">&lt; 3s</div>
+        <div class="stat-label">Analysis Time</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-value">2-Stage</div>
+        <div class="stat-label">AI Pipeline</div>
+      </div>
+    </div>
+
+    <!-- Floating demo card -->
+    <div class="hero-demo-card">
+      <div class="demo-header">
+        <span class="demo-dot red"></span><span class="demo-dot yellow"></span><span class="demo-dot green"></span>
+        <span class="demo-title">Live Analysis Preview</span>
+      </div>
+      <div class="demo-text">
+        "Scientists discover miracle cure that doctors don't want you to know about..."
+      </div>
+      <div class="demo-result">
+        <span class="badge badge-fake">⚠️ Likely Fake</span>
+        <span class="demo-conf">Confidence: 94%</span>
+      </div>
+      <div class="demo-bullets">
+        <div class="demo-bullet">• Sensational language with no attributed sources</div>
+        <div class="demo-bullet">• "Don't want you to know" — classic conspiracy framing</div>
+        <div class="demo-bullet">• No specific data, study names, or researchers cited</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Features ─────────────────────────────────────── -->
+  <section class="features-section" id="features">
+    <div class="section-label">FEATURES</div>
+    <h2 class="section-h2">Why Choose Tathya.AI?</h2>
+    <p class="section-desc">Built with the latest NLP models and LLM explainability — not just a label, but a full breakdown.</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3>RoBERTa Classifier</h3>
+        <p>Fine-tuned on LIAR + FakeNewsNet datasets. Trained to detect subtle patterns of misinformation across thousands of real articles.</p>
+      </div>
+      <div class="feature-card feature-card-accent">
+        <div class="feature-icon">✨</div>
+        <h3>Gemini Explanations</h3>
+        <p>Google Gemini 1.5 Flash explains the classification in human-readable bullet points — so you understand <em>why</em>, not just what.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Confidence Score</h3>
+        <p>Every result comes with a 0–100% confidence score. Know how certain the AI is — and when to dig deeper yourself.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📜</div>
+        <h3>Analysis History</h3>
+        <p>All your past analyses are saved. Track which articles you've checked and revisit results anytime from your dashboard.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>Secure & Private</h3>
+        <p>JWT-secured authentication. Your analyses are tied to your account only — no data sharing, no ads.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Fast & Reliable</h3>
+        <p>Two-stage pipeline with graceful degradation. Classification always returns even if explanation times out.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── How It Works ──────────────────────────────────── -->
+  <section class="how-section" id="how-it-works">
+    <div class="section-label">HOW IT WORKS</div>
+    <h2 class="section-h2">Three Steps to Truth</h2>
+
+    <div class="steps-container">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-icon">📋</div>
+        <h3>Paste the Text</h3>
+        <p>Copy any news article, headline, or paragraph and paste it into the analyzer. Minimum 50 characters.</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-icon">🧠</div>
+        <h3>AI Analyzes</h3>
+        <p>RoBERTa classifies the text as FAKE or REAL. Gemini then generates a detailed explanation of the key signals.</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-icon">📊</div>
+        <h3>Get the Truth</h3>
+        <p>See the verdict, confidence score, and bullet-point explanation. Make an informed decision instantly.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA Banner ────────────────────────────────────── -->
+  <section class="cta-section">
+    <div class="cta-inner">
+      <h2>Ready to Fight Misinformation?</h2>
+      <p>Join Tathya.AI today. Free to use, no credit card required.</p>
+      <button class="land-btn-primary land-btn-lg" onclick="handleTryNow()">
+        Get Started for Free →
+      </button>
+    </div>
+  </section>
+
+  <!-- ── Footer ────────────────────────────────────────── -->
+  <footer class="land-footer">
+    <div class="footer-logo">
+      <div class="land-logo-icon" style="width:28px;height:28px;font-size:14px;">🛡️</div>
+      <span>Tathya<span class="logo-dot">.AI</span></span>
+    </div>
+    <p class="footer-copy">© 2026 Tathya.AI · Built with RoBERTa + Google Gemini · Fighting misinformation one article at a time.</p>
+  </footer>
+
+  <script src="../js/auth.js"></script>
+  <script>
+    // ── Nav: show correct buttons based on auth state ──
+    const token = localStorage.getItem("token");
+    const name  = localStorage.getItem("userName");
+    if (token && name) {
+      document.getElementById("navGuest").style.display = "none";
+      const userDiv = document.getElementById("navUser");
+      userDiv.style.display = "flex";
+      document.getElementById("navWelcomeName").textContent = `Hi, ${name.split(" ")[0]} 👋`;
+    }
+
+    function handleTryNow() {
+      if (localStorage.getItem("token")) {
+        window.location.href = "detector.html";
+      } else {
+        window.location.href = "login.html";
+      }
+    }
+
+    function logoutLanding() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userName");
+      window.location.reload();
+    }
+
+    // ── Sticky nav shadow on scroll ──
+    window.addEventListener("scroll", () => {
+      const nav = document.getElementById("landNav");
+      nav.classList.toggle("nav-scrolled", window.scrollY > 20);
+    });
+
+    // ── Mobile menu ──
+    function toggleMobileMenu() {
+      document.getElementById("mobileMenu").classList.toggle("open");
+    }
+    function closeMobileMenu() {
+      document.getElementById("mobileMenu").classList.remove("open");
+    }
+  </script>
+</body>
+</html>

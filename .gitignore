@@ -1,0 +1,42 @@
+# ============================================================
+# Fake News Detector — Root .gitignore
+# ============================================================
+
+# --- Environment / Secrets (NEVER commit these) ---
+.env
+.env.local
+.env.*.local
+
+# --- Node.js ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+# --- IDEs & OS ---
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+
+# --- Logs ---
+*.log
+logs/
+
+
+# --- Render ---
+.render-buildpacks.json

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up — Tathya.AI</title>
+  <meta name="description" content="Create your Tathya.AI account and start detecting fake news for free." />
+  <link rel="stylesheet" href="../css/style.css" />
+  <script src="../js/theme.js"></script>
+</head>
+<body>
+  <div class="auth-wrapper">
+    <div class="logo-row">
+      <div class="logo-icon">🛡️</div>
+      <div>
+        <div class="logo-name">Tathya<span class="logo-dot">.AI</span></div>
+        <div class="logo-sub">FAKE NEWS DETECTOR</div>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme"></button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Create account</div>
+      <div class="card-sub">Start detecting misinformation today — free forever</div>
+
+      <div class="error-msg" id="errorMsg"></div>
+
+      <div class="field">
+        <label for="name">Full name</label>
+        <input type="text" id="name" placeholder="Your Name" autocomplete="name" />
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="you@example.com" autocomplete="email" />
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="min. 8 characters" autocomplete="new-password" />
+      </div>
+
+      <button class="btn btn-primary" id="signupBtn" onclick="handleSignup()">Create account</button>
+
+      <div class="link-row">
+        Already have an account? <a href="login.html">Sign in</a>
+      </div>
+      <div class="link-row" style="margin-top:8px;">
+        <a href="index.html">← Back to Home</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/auth.js"></script>
+  <script>
+    if (localStorage.getItem("token")) {
+      window.location.href = "detector.html";
+    }
+
+    async function handleSignup() {
+      const name     = document.getElementById("name").value.trim();
+      const email    = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const errorMsg = document.getElementById("errorMsg");
+      const btn      = document.getElementById("signupBtn");
+
+      errorMsg.classList.remove("show");
+
+      if (!name || !email || !password) {
+        errorMsg.textContent = "Please fill in all fields.";
+        errorMsg.classList.add("show");
+        return;
+      }
+
+      if (password.length < 8) {
+        errorMsg.textContent = "Password must be at least 8 characters.";
+        errorMsg.classList.add("show");
+        return;
+      }
+
+      btn.textContent = "Creating account…";
+      btn.disabled = true;
+
+      const result = await signupUser(name, email, password);
+
+      if (result.success) {
+        window.location.href = "detector.html";
+      } else {
+        errorMsg.textContent = result.message || "Signup failed. Try again.";
+        errorMsg.classList.add("show");
+        btn.textContent = "Create account";
+        btn.disabled = false;
+      }
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleSignup();
+    });
+  </script>
+</body>
+</html>
