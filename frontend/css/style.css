@@ -1091,6 +1091,7 @@ textarea::placeholder { color: var(--text-muted); }
 
 /* ML Fat Api Button to wake up ml service on render */
 
+/* ML API Status Bar */
 .api-status-bar {
   display: flex;
   align-items: center;
@@ -1101,19 +1102,34 @@ textarea::placeholder { color: var(--text-muted); }
   font-size: 13px;
   color: var(--text-secondary);
 }
-.api-dot { width: 8px; height: 8px; border-radius: 50%; background: #888; }
+
+.api-dot { width: 8px; height: 8px; border-radius: 50%; background: #888; flex-shrink: 0; }
 .api-dot.online { background: #3B6D11; }
 .api-dot.offline { background: #A32D2D; }
 .api-dot.checking { background: #F0A500; animation: pulse 1s infinite; }
+
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* Wake Up button — analyze ke opposite side mein */
 .btn-wake {
-  padding: 4px 12px;
-  font-size: 12px;
-  font-weight: 500;
-  background: var(--accent);
-  color: #fff;
-  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  background: transparent;
+  color: var(--accent);
+  border: 2px solid var(--accent);
   border-radius: var(--radius-sm);
   cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
-.btn-wake:hover { opacity: 0.85; }
+.btn-wake:hover {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-wake:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
