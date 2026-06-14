@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — Tathya.AI</title>
+  <meta name="description" content="Your personal fake news analysis dashboard with stats and trends." />
+  <link rel="stylesheet" href="/css/style.css" />
+  <script src="/js/theme.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="detector-body">
+  <div class="detector-layout">
+
+    <!-- Navbar -->
+    <nav class="navbar">
+      <a class="nav-logo" href="index.html">
+        <div class="nav-logo-icon">🛡️</div>
+        Tathya<span class="logo-dot">.AI</span>
+      </a>
+      <div class="nav-links">
+        <a href="detector.html" class="nav-link">🔍 Detector</a>
+        <a href="dashboard.html" class="nav-link active">📊 Dashboard</a>
+        <a href="history.html" class="nav-link">📋 History</a>
+      </div>
+      <div class="nav-right">
+        <span class="nav-user" id="navUser">Loading…</span>
+        <div class="avatar" id="navAvatar">--</div>
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme"></button>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+      </div>
+    </nav>
+
+    <main class="detector-main">
+      <div class="section-title">📊 Your Dashboard</div>
+      <div class="section-sub">Track your analysis history and spot trends over time</div>
+
+      <!-- Stat Cards -->
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <div class="stat-icon">🔍</div>
+          <div class="stat-value" id="statTotal">—</div>
+          <div class="stat-label">Total Analyses</div>
+        </div>
+        <div class="stat-card stat-fake">
+          <div class="stat-icon">⚠️</div>
+          <div class="stat-value" id="statFake">—</div>
+          <div class="stat-label">Fake Detected</div>
+        </div>
+        <div class="stat-card stat-real">
+          <div class="stat-icon">✅</div>
+          <div class="stat-value" id="statReal">—</div>
+          <div class="stat-label">Real Verified</div>
+        </div>
+        <div class="stat-card stat-conf">
+          <div class="stat-icon">🎯</div>
+          <div class="stat-value" id="statConf">—</div>
+          <div class="stat-label">Avg Confidence</div>
+        </div>
+      </div>
+
+      <!-- Empty state (shown when no data) -->
+      <div class="dash-empty" id="dashEmpty" style="display:none">
+        <div style="font-size:3rem;margin-bottom:12px">📭</div>
+        <div style="font-size:1.1rem;font-weight:600;margin-bottom:8px">No analyses yet</div>
+        <div style="color:var(--text-muted);margin-bottom:20px">Go to the Detector page and analyze your first article!</div>
+        <a href="detector.html" class="btn-analyze" style="display:inline-flex;text-decoration:none;padding:12px 28px">🔍 Start Analyzing</a>
+      </div>
+
+      <!-- Charts row -->
+      <div class="charts-row" id="chartsRow">
+        <div class="chart-card">
+          <div class="chart-title">Fake vs Real Split</div>
+          <div class="chart-wrap donut-wrap">
+            <canvas id="donutChart"></canvas>
+          </div>
+          <div class="donut-legend" id="donutLegend"></div>
+        </div>
+
+        <div class="chart-card chart-card-wide">
+          <div class="chart-title">Analyses — Last 7 Days</div>
+          <div class="chart-wrap">
+            <canvas id="barChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent analyses -->
+      <div class="dash-recent" id="recentSection">
+        <div class="history-title">
+          Recent Analyses
+          <a href="history.html" class="view-all-link">View All →</a>
+        </div>
+        <div id="recentList"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="/js/auth.js"></script>
+  <script src="/js/dashboard.js"></script>
+
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) window.location.href = "login.html";
+
+    const userName = localStorage.getItem("userName") || "User";
+    document.getElementById("navUser").textContent = userName;
+    document.getElementById("navAvatar").textContent = userName.slice(0, 2).toUpperCase();
+
+    function logout() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userName");
+      window.location.href = "index.html";
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>

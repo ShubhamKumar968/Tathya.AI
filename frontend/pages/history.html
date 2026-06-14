@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>History — Tathya.AI</title>
+  <meta name="description" content="Browse your complete analysis history on Tathya.AI." />
+  <link rel="stylesheet" href="/css/style.css" />
+  <script src="/js/theme.js"></script>
+</head>
+<body class="detector-body">
+  <div class="detector-layout">
+
+    <!-- Navbar -->
+    <nav class="navbar">
+      <a class="nav-logo" href="index.html">
+        <div class="nav-logo-icon">🛡️</div>
+        Tathya<span class="logo-dot">.AI</span>
+      </a>
+      <div class="nav-links">
+        <a href="detector.html" class="nav-link">🔍 Detector</a>
+        <a href="dashboard.html" class="nav-link">📊 Dashboard</a>
+        <a href="history.html" class="nav-link active">📋 History</a>
+      </div>
+      <div class="nav-right">
+        <span class="nav-user" id="navUser">Loading…</span>
+        <div class="avatar" id="navAvatar">--</div>
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme"></button>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+      </div>
+    </nav>
+
+    <main class="detector-main">
+      <div class="section-title">📋 Analysis History</div>
+      <div class="section-sub">All your past news analyses, filtered and searchable</div>
+
+      <!-- Controls bar -->
+      <div class="history-controls">
+        <!-- Filter tabs -->
+        <div class="filter-tabs">
+          <button class="filter-tab active" id="tabAll"  onclick="setFilter('ALL')">All</button>
+          <button class="filter-tab"        id="tabFake" onclick="setFilter('FAKE')">⚠️ Fake</button>
+          <button class="filter-tab"        id="tabReal" onclick="setFilter('REAL')">✅ Real</button>
+        </div>
+
+        <!-- Search -->
+        <div class="hist-search-wrap">
+          <input
+            id="histSearch"
+            class="hist-search"
+            type="text"
+            placeholder="Search in articles…"
+            oninput="handleSearch()"
+          />
+          <span class="search-icon">🔍</span>
+        </div>
+      </div>
+
+      <!-- Results count -->
+      <div class="hist-meta" id="histMeta"></div>
+
+      <!-- History list -->
+      <div id="historyList"></div>
+
+      <!-- Empty state -->
+      <div class="dash-empty" id="histEmpty" style="display:none">
+        <div style="font-size:3rem;margin-bottom:12px">📭</div>
+        <div style="font-size:1.1rem;font-weight:600;margin-bottom:8px">No results found</div>
+        <div style="color:var(--text-muted)">Try a different filter or analyze more articles.</div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" id="pagination"></div>
+
+    </main>
+  </div>
+
+  <script src="/js/auth.js"></script>
+  <script src="/js/history.js"></script>
+
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) window.location.href = "login.html";
+
+    const userName = localStorage.getItem("userName") || "User";
+    document.getElementById("navUser").textContent = userName;
+    document.getElementById("navAvatar").textContent = userName.slice(0, 2).toUpperCase();
+
+    function logout() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userName");
+      window.location.href = "index.html";
+    }
+
+    initHistory();
+  </script>
+</body>
+</html>

@@ -196,7 +196,8 @@ async function loadHistory() {
 
     if (!res.ok) return;
 
-    const items = await res.json();
+    const data  = await res.json();
+    const items = data.analyses || [];
 
     if (!items || items.length === 0) {
       historySection.style.display = "none";
