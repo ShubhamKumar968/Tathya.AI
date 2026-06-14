@@ -24,7 +24,10 @@ def _get_client():
             raise ValueError(
                 "GEMINI_API_KEY is not set. Add it to your .env or Render environment variables."
             )
-        _client = genai.Client(api_key=api_key)
+        _client = genai.Client(
+            api_key=api_key,
+            http_options={"api_version": "v1"}   # Force v1 — gemini-1.5-flash not in v1beta
+        )
     return _client
 
 
