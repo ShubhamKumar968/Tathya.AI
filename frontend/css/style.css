@@ -846,6 +846,29 @@ body.detector-body {
   box-shadow: var(--shadow-accent);
 }
 
+.nav-links { display: flex; align-items: center; gap: 8px; }
+.nav-link {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1.5px solid transparent;
+  transition: all 0.2s ease;
+}
+.nav-link:hover {
+  color: var(--text-primary);
+  background: var(--surface-2);
+  border-color: var(--border);
+}
+.nav-link.active {
+  color: var(--accent);
+  background: var(--accent-light);
+  border-color: var(--accent);
+}
+
 .nav-right { display: flex; align-items: center; gap: 12px; }
 .nav-user  { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
 .avatar {
