@@ -152,7 +152,7 @@ function displayResult(data) {
   }, 80);
   confValue.textContent = `${pct}% confidence`;
 
-  // Parse Grok bullet points
+  // Parse Groq bullet points
   bulletList.innerHTML = "";
   const lines = explanation
     .split("\n")
